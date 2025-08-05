@@ -1,0 +1,8 @@
+{
+  "buildCommand": "npm run build",
+  "outputDirectory": "public",
+  "installCommand": "npm install",
+  "rewrites": [
+    { "source": "/:slug", "destination": "/:slug.html" }
+  ]
+}
