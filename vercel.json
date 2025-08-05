@@ -3,6 +3,7 @@
   "outputDirectory": "public",
   "installCommand": "npm install",
   "rewrites": [
+    { "source": "/", "destination": "/index.html" },
     { "source": "/:slug", "destination": "/:slug.html" }
   ]
 }
