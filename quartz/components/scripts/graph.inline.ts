@@ -378,16 +378,17 @@ async function renderGraph(graph: HTMLElement, fullSlug: FullSlug) {
       interactive: false,
       eventMode: "none",
       text: n.text,
-      alpha: 0,
+      alpha: 1,
       anchor: { x: 0.5, y: 1.2 },
       style: {
-        fontSize: fontSize * 15,
+        fontSize: fontSize * 20,
         fill: computedStyleMap["--dark"],
         fontFamily: computedStyleMap["--bodyFont"],
       },
       resolution: window.devicePixelRatio * 4,
     })
-    label.scale.set(1 / scale)
+    const inverseFontScale = 1 / scale
+    label.scale.set(inverseFontScale)
 
     let oldLabelOpacity = 0
     const isTagNode = nodeId.startsWith("tags/")
@@ -509,15 +510,15 @@ async function renderGraph(graph: HTMLElement, fullSlug: FullSlug) {
           stage.scale.set(transform.k, transform.k)
           stage.position.set(transform.x, transform.y)
 
-          // zoom adjusts opacity of labels too
-          const scale = transform.k * opacityScale
-          let scaleOpacity = Math.max((scale - 1) / 3.75, 0)
-          const activeNodes = nodeRenderData.filter((n) => n.active).flatMap((n) => n.label)
-
+          // update label scaling for consistent visual size during zoom
+          const inverseFontScale = 1 / transform.k
           for (const label of labelsContainer.children) {
-            if (!activeNodes.includes(label)) {
-              label.alpha = scaleOpacity
-            }
+            label.scale.set(inverseFontScale)
+          }
+
+          // make labels always visible
+          for (const label of labelsContainer.children) {
+            label.alpha = 1
           }
         }),
     )
@@ -541,7 +542,7 @@ async function renderGraph(graph: HTMLElement, fullSlug: FullSlug) {
       l.gfx.moveTo(linkData.source.x! + width / 2, linkData.source.y! + height / 2)
       l.gfx
         .lineTo(linkData.target.x! + width / 2, linkData.target.y! + height / 2)
-        .stroke({ alpha: l.alpha, width: 1, color: l.color })
+        .stroke({ alpha: l.alpha, width: 0.5, color: l.color })
     }
 
     tweens.forEach((t) => t.update(time))
